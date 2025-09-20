@@ -79,6 +79,8 @@ Visit [https://gallery-gt1r.onrender.com](https://gallery-gt1r.onrender.com) to 
 - ✅ MILESTONE 4 (Purple)
 - ✅ Functional image gallery
 
+![Live Website](screenshots/live_website.png)
+
 ## 📱 Notifications
 
 - **Email:** Sent on test failures to brendawanjiru72@gmail.com
