@@ -20,13 +20,19 @@ pipeline {
 
         stage('Test') {
             steps {
-                echo 'Running tests...'
-                sh 'npm test'
+                withCredentials([
+                    string(credentialsId: 'mongo-username', variable: 'MONGO_USERNAME'),
+                    string(credentialsId: 'mongo-password', variable: 'MONGO_PASSWORD'),
+                    string(credentialsId: 'mongo-cluster', variable: 'MONGO_CLUSTER')
+                ]) {
+                    echo 'Running tests...'
+                    sh 'npm test'
+                }
             }
             post {
                 failure {
                     emailext (
-                        to: 'your-email@example.com',
+                        to: 'brendawanjiru72@gmail.com',
                         subject: 'Jenkins Pipeline Failed - Test Stage',
                         body: 'The test stage in Jenkins pipeline has failed. Please check the console output for details.',
                         attachLog: true
