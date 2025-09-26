@@ -4,6 +4,7 @@
   "description": "",
   "main": "server.js",
   "scripts": {
+    "build": "echo \"Building gallery app (static assets only)\"",
     "test": "mocha --exit"
   },
   "keywords": [],

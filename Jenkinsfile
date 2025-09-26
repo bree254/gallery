@@ -18,6 +18,13 @@ pipeline {
             }
         }
 
+        stage('Build') {
+            steps {
+                echo 'Building application...'
+                sh 'npm run build'
+            }
+        }
+
         stage('Test') {
             steps {
                 withCredentials([
