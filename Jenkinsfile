@@ -4,6 +4,10 @@ pipeline {
       nodejs 'nodejs-23'
     }
 
+    triggers {
+        githubPush() 
+    }
+
     stages{
         stage('checkout'){
             steps{
@@ -36,16 +40,7 @@ pipeline {
                     sh 'npm test'
                 }
             }
-            post {
-                failure {
-                    emailext (
-                        to: 'brendawanjiru72@gmail.com',
-                        subject: 'Jenkins Pipeline Failed - Test Stage',
-                        body: 'The test stage in Jenkins pipeline has failed. Please check the console output for details.',
-                        attachLog: true
-                    )
-                }
-            }
+            
         }
 
         stage('Deploy to Render') {
@@ -60,16 +55,36 @@ pipeline {
 
     post {
         success {
+            emailext(
+                to: 'brendawanjiru72@gmail.com',
+                subject: "✅ SUCCESS: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
+                body: "The pipeline ran successfully! Check details at ${env.BUILD_URL}"
+            )
+
             withCredentials([string(credentialsId: 'slack-webhook', variable: 'SLACK_WEBHOOK')]) {
-                sh '''
+                sh """
                     curl -X POST -H 'Content-type: application/json' \
                     --data '{"text":"✅ Jenkins Pipeline Success! Build ID: '${BUILD_NUMBER}' | Render URL: https://gallery-gt1r.onrender.com"}' \
                     $SLACK_WEBHOOK
-                '''
+                """
             }
         }
         failure {
-            echo 'Pipeline failed!'
+            emailext(
+                to: 'brendawanjiru72@gmail.com',
+                subject: "❌ FAILURE: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
+                body: "The pipeline failed. See console logs: ${env.BUILD_URL}",
+                attachLog: true
+            )
+
+            withCredentials([string(credentialsId: 'slack-webhook', variable: 'SLACK_WEBHOOK')]) {
+                sh """
+                    curl -X POST -H 'Content-type: application/json' \
+                    --data '{"text":"❌ FAILURE: '${JOB_NAME}' #${BUILD_NUMBER}"}' \
+                    $SLACK_WEBHOOK
+                """
+            }
+
         }
     }
 }
